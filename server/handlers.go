@@ -28,6 +28,7 @@ func (server *Server) generateHandleWS(ctx context.Context, cancel context.Cance
 	}()
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		server.debugHTTPRequest("ws upgrade request", r)
 		if server.options.Once {
 			success := atomic.CompareAndSwapInt64(once, 0, 1)
 			if !success {
@@ -61,6 +62,7 @@ func (server *Server) generateHandleWS(ctx context.Context, cancel context.Cance
 		log.Printf("New client connected: %s, connections: %d/%d", r.RemoteAddr, num, server.options.MaxConnection)
 
 		if r.Method != "GET" {
+			server.debugf("ws upgrade rejected method=%s remote=%s", r.Method, r.RemoteAddr)
 			http.Error(w, "Method not allowed", 405)
 			return
 		}
@@ -68,8 +70,12 @@ func (server *Server) generateHandleWS(ctx context.Context, cancel context.Cance
 		conn, err := server.upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			closeReason = err.Error()
+			server.debugf("ws upgrade failed remote=%s error=%q", r.RemoteAddr, err)
 			return
 		}
+		server.debugWSEvent(conn.RemoteAddr().String(), "upgrade ok", map[string]interface{}{
+			"subprotocol": conn.Subprotocol(),
+		})
 		defer conn.Close()
 
 		err = server.processWSConn(ctx, conn)
@@ -84,6 +90,9 @@ func (server *Server) generateHandleWS(ctx context.Context, cancel context.Cance
 		default:
 			closeReason = fmt.Sprintf("an error: %s", err)
 		}
+		server.debugWSEvent(conn.RemoteAddr().String(), "closed", map[string]interface{}{
+			"reason": closeReason,
+		})
 	}
 }
 
@@ -101,6 +110,10 @@ func (server *Server) processWSConn(ctx context.Context, conn *websocket.Conn) e
 	if err != nil {
 		return errors.Wrapf(err, "failed to authenticate websocket connection")
 	}
+	server.debugWSEvent(conn.RemoteAddr().String(), "init message", map[string]interface{}{
+		"has_arguments":      init.Arguments != "",
+		"auth_token_matches": init.AuthToken == server.options.Credential,
+	})
 	if init.AuthToken != server.options.Credential {
 		return errors.New("failed to authenticate websocket connection")
 	}
@@ -156,6 +169,12 @@ func (server *Server) processWSConn(ctx context.Context, conn *websocket.Conn) e
 	}
 	if server.options.Preferences != nil {
 		opts = append(opts, webtty.WithMasterPreferences(server.options.Preferences))
+	}
+	if server.options.Debug {
+		remoteAddr := conn.RemoteAddr().String()
+		opts = append(opts, webtty.WithEventHandler(func(event string, fields map[string]interface{}) {
+			server.debugWSEvent(remoteAddr, event, fields)
+		}))
 	}
 
 	tty, err := webtty.New(&wsWrapper{conn}, slave, opts...)

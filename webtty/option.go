@@ -60,3 +60,11 @@ func WithMasterPreferences(preferences interface{}) Option {
 		return nil
 	}
 }
+
+// WithEventHandler sets an optional handler for diagnostic WebTTY events.
+func WithEventHandler(handler func(event string, fields map[string]interface{})) Option {
+	return func(wt *WebTTY) error {
+		wt.eventHandler = handler
+		return nil
+	}
+}

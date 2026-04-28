@@ -18,12 +18,13 @@ type WebTTY struct {
 	// PTY Slave
 	slave Slave
 
-	windowTitle []byte
-	permitWrite bool
-	columns     int
-	rows        int
-	reconnect   int // in seconds
-	masterPrefs []byte
+	windowTitle  []byte
+	permitWrite  bool
+	columns      int
+	rows         int
+	reconnect    int // in seconds
+	masterPrefs  []byte
+	eventHandler func(event string, fields map[string]interface{})
 
 	bufferSize int
 	writeMutex sync.Mutex
@@ -110,6 +111,13 @@ func (wt *WebTTY) Run(ctx context.Context) error {
 }
 
 func (wt *WebTTY) sendInitializeMessage() error {
+	wt.emitEvent("initialize", map[string]interface{}{
+		"reconnect":     wt.reconnect,
+		"fixed_columns": wt.columns,
+		"fixed_rows":    wt.rows,
+		"permit_write":  wt.permitWrite,
+	})
+
 	err := wt.masterWrite(append([]byte{SetWindowTitle}, wt.windowTitle...))
 	if err != nil {
 		return errors.Wrapf(err, "failed to send window title")
@@ -162,6 +170,10 @@ func (wt *WebTTY) handleMasterReadEvent(data []byte) error {
 
 	switch data[0] {
 	case Input:
+		wt.emitEvent("input", map[string]interface{}{
+			"bytes":        len(data) - 1,
+			"permit_write": wt.permitWrite,
+		})
 		if !wt.permitWrite {
 			return nil
 		}
@@ -176,6 +188,7 @@ func (wt *WebTTY) handleMasterReadEvent(data []byte) error {
 		}
 
 	case Ping:
+		wt.emitEvent("ping", nil)
 		err := wt.masterWrite([]byte{Pong})
 		if err != nil {
 			return errors.Wrapf(err, "failed to return Pong message to master")
@@ -205,12 +218,22 @@ func (wt *WebTTY) handleMasterReadEvent(data []byte) error {
 			columns = int(args.Columns)
 		}
 
+		wt.emitEvent("resize", map[string]interface{}{
+			"columns": columns,
+			"rows":    rows,
+		})
 		wt.slave.ResizeTerminal(columns, rows)
 	default:
 		return errors.Errorf("unknown message type `%c`", data[0])
 	}
 
 	return nil
+}
+
+func (wt *WebTTY) emitEvent(event string, fields map[string]interface{}) {
+	if wt.eventHandler != nil {
+		wt.eventHandler(event, fields)
+	}
 }
 
 type argResizeTerminal struct {

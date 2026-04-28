@@ -9,9 +9,11 @@ import (
 
 func (server *Server) wrapLogger(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server.debugHTTPRequest("http request", r)
 		rw := &logResponseWriter{w, 200}
 		handler.ServeHTTP(rw, r)
 		log.Printf("%s %d %s %s", r.RemoteAddr, rw.status, r.Method, r.URL.Path)
+		server.debugf("http response method=%s path=%s status=%d remote=%s", r.Method, r.URL.Path, rw.status, r.RemoteAddr)
 	})
 }
 
