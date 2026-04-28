@@ -7,7 +7,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/kr/pty"
+	"github.com/creack/pty"
 	"github.com/pkg/errors"
 )
 
@@ -30,8 +30,11 @@ type LocalCommand struct {
 
 func New(command string, argv []string, options ...Option) (*LocalCommand, error) {
 	cmd := exec.Command(command, argv...)
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setsid: true,
+	}
 
-	pty, err := pty.Start(cmd)
+	ptyFile, err := pty.StartWithAttrs(cmd, nil, cmd.SysProcAttr)
 	if err != nil {
 		// todo close cmd?
 		return nil, errors.Wrapf(err, "failed to start command `%s`", command)
@@ -46,7 +49,7 @@ func New(command string, argv []string, options ...Option) (*LocalCommand, error
 		closeTimeout: DefaultCloseTimeout,
 
 		cmd:       cmd,
-		pty:       pty,
+		pty:       ptyFile,
 		ptyClosed: ptyClosed,
 	}
 
