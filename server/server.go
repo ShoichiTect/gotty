@@ -193,6 +193,7 @@ func (server *Server) setupHandlers(ctx context.Context, cancel context.CancelFu
 
 	siteMux.HandleFunc(pathPrefix+"auth_token.js", server.handleAuthToken)
 	siteMux.HandleFunc(pathPrefix+"config.js", server.handleConfig)
+	siteMux.HandleFunc(pathPrefix+"debug.js", server.handleDebugFlag)
 
 	siteHandler := http.Handler(siteMux)
 

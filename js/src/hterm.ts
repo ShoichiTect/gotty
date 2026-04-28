@@ -66,6 +66,10 @@ export class Hterm {
         };
     };
 
+    onDebug(callback: (msg: string) => void) {
+        // hterm debug not implemented
+    };
+
     onResize(callback: (colmuns: number, rows: number) => void) {
         this.io.onTerminalResize = (columns: number, rows: number) => {
             this.columns = columns;

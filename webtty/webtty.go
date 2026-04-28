@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -173,6 +174,7 @@ func (wt *WebTTY) handleMasterReadEvent(data []byte) error {
 		wt.emitEvent("input", map[string]interface{}{
 			"bytes":        len(data) - 1,
 			"permit_write": wt.permitWrite,
+			"hex":          fmt.Sprintf("%x", data[1:]),
 		})
 		if !wt.permitWrite {
 			return nil
@@ -193,6 +195,11 @@ func (wt *WebTTY) handleMasterReadEvent(data []byte) error {
 		if err != nil {
 			return errors.Wrapf(err, "failed to return Pong message to master")
 		}
+
+	case InputDebug:
+		wt.emitEvent("input_debug", map[string]interface{}{
+			"payload": string(data[1:]),
+		})
 
 	case ResizeTerminal:
 		if wt.columns != 0 && wt.rows != 0 {

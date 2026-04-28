@@ -6,6 +6,7 @@ import { ConnectionFactory } from "./websocket";
 // @TODO remove these
 declare var gotty_auth_token: string;
 declare var gotty_term: string;
+declare var gotty_debug: boolean;
 
 const elem = document.getElementById("terminal")
 
@@ -14,7 +15,7 @@ if (elem !== null) {
     if (gotty_term == "hterm") {
         term = new Hterm(elem);
     } else {
-        term = new Xterm(elem);
+        term = new Xterm(elem, gotty_debug);
     }
     const httpsEnabled = window.location.protocol == "https:";
     const url = (httpsEnabled ? 'wss://' : 'ws://') + window.location.host + window.location.pathname + 'ws';

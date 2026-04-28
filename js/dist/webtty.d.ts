@@ -3,6 +3,7 @@ export declare const msgInputUnknown = "0";
 export declare const msgInput = "1";
 export declare const msgPing = "2";
 export declare const msgResizeTerminal = "3";
+export declare const msgDebug = "4";
 export declare const msgUnknownOutput = "0";
 export declare const msgOutput = "1";
 export declare const msgPong = "2";
@@ -20,6 +21,7 @@ export interface Terminal {
     setWindowTitle(title: string): void;
     setPreferences(value: object): void;
     onInput(callback: (input: string) => void): void;
+    onDebug(callback: (msg: string) => void): void;
     onResize(callback: (colmuns: number, rows: number) => void): void;
     reset(): void;
     deactivate(): void;

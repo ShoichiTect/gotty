@@ -8,7 +8,10 @@ export declare class Xterm {
     message: HTMLElement;
     messageTimeout: number;
     messageTimer: number;
-    constructor(elem: HTMLElement);
+    private inputCallback;
+    private debugCallback;
+    private debugEnabled;
+    constructor(elem: HTMLElement, debugEnabled?: boolean);
     info(): {
         columns: number;
         rows: number;
@@ -19,8 +22,12 @@ export declare class Xterm {
     setWindowTitle(title: string): void;
     setPreferences(value: object): void;
     onInput(callback: (input: string) => void): void;
+    onDebug(callback: (msg: string) => void): void;
     onResize(callback: (colmuns: number, rows: number) => void): void;
     deactivate(): void;
+    private setupIPadOSKeyboardFix();
+    private debugLog(tag, payload);
+    private attachKeyboardDebugListener();
     reset(): void;
     close(): void;
 }

@@ -13,6 +13,8 @@ const (
 	Ping = '2'
 	// Notify that the browser size has been changed
 	ResizeTerminal = '3'
+	// Debug payload from the browser (keyboard events, etc.)
+	InputDebug = '4'
 )
 
 const (

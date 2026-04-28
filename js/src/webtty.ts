@@ -4,6 +4,7 @@ export const msgInputUnknown = '0';
 export const msgInput = '1';
 export const msgPing = '2';
 export const msgResizeTerminal = '3';
+export const msgDebug = '4';
 
 export const msgUnknownOutput = '0';
 export const msgOutput = '1';
@@ -21,6 +22,7 @@ export interface Terminal {
     setWindowTitle(title: string): void;
     setPreferences(value: object): void;
     onInput(callback: (input: string) => void): void;
+    onDebug(callback: (msg: string) => void): void;
     onResize(callback: (colmuns: number, rows: number) => void): void;
     reset(): void;
     deactivate(): void;
@@ -91,6 +93,12 @@ export class WebTTY {
                 this.term.onInput(
                     (input: string) => {
                         connection.send(msgInput + input);
+                    }
+                );
+
+                this.term.onDebug(
+                    (msg: string) => {
+                        connection.send(msgDebug + msg);
                     }
                 );
 
