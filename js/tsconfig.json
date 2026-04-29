@@ -1,20 +1,19 @@
 {
   "compilerOptions": {
-      "strictNullChecks": true,
-      "noUnusedLocals" : true,
-      "noImplicitThis": true,
-      "alwaysStrict": true,
-      "outDir": "./dist/",
-      "declaration": true,
-      "sourceMap": true,
-      "target": "es5",
-      "module": "commonJS",
-      "baseUrl": ".",
-      "paths": {
-          "*": ["./typings/*"]
-      }
+    "strict": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "outDir": "./dist/",
+    "declaration": true,
+    "sourceMap": true,
+    "target": "es2018",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "skipLibCheck": true
   },
-    "exclude": [
-      "node_modules"
-    ]
+  "exclude": [
+    "node_modules"
+  ]
 }

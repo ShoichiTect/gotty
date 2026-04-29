@@ -1,4 +1,4 @@
-.terminal {
+.xterm {
     font-family: "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols";
 }
 
@@ -16,4 +16,5 @@
     transform: translate(-50%, -50%);
     user-select: none;
     transition: opacity 180ms ease-in;
+    z-index: 10;
 }

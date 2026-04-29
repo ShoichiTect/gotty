@@ -42,16 +42,19 @@ The local patched GoTTY baseline works well in that scenario. Therefore this for
 
 ## Important differences from ttyd
 
-GoTTY current frontend/protocol:
+GoTTY current frontend/protocol (after Phase 4):
 
-- Simple TypeScript frontend.
+- `@xterm/xterm` v5 with fit and web-links addons.
+- TypeScript/webpack 5 frontend (no framework).
 - WebSocket subprotocol `webtty`.
 - Text WebSocket messages.
 - Server output is base64 encoded text.
-- JavaScript-side ping every 30 seconds.
-- No WebGL renderer.
+- `Uint8Array` passed directly to xterm for stateful UTF-8 handling.
+- JavaScript-side ping every 30 seconds (configurable via `--ping-interval`).
+- No WebGL renderer (addon not loaded).
 - No Preact lifecycle.
 - No fetch-based token endpoint.
+- No hterm/libapps (removed).
 
 Current ttyd frontend/protocol:
 
@@ -176,11 +179,11 @@ layer (HTML, JS, or Go config — never all three at once).
 Done:
 - 19e426f — viewport meta tag, 150ms resize debounce, `--ping-interval` flag with `gotty_ping_interval` JS variable.
 
-### Phase 4: modernize frontend carefully
+### Phase 4: modernize frontend carefully — ✅ Done (ac7be45)
 
 Goal: remove known frontend vulnerabilities while preserving the working protocol.
 
-Recommended path:
+Tasks:
 
 1. Replace old `xterm` v2 with `@xterm/xterm` v5.
 2. Use `@xterm/addon-fit`.
@@ -190,6 +193,26 @@ Recommended path:
 6. Remove hterm/libapps if xterm v5 is stable enough on iPad.
 7. Upgrade TypeScript and webpack.
 8. Test on iPad Safari/Chrome after each step.
+
+Done:
+- ac7be45 — replaced xterm v2 with `@xterm/xterm` v5.5.0, added fit and web-links addons.
+- Removed hterm/libapps entirely. hterm.ts, typings/libapps, and `--term hterm` path deleted.
+- Upgraded TypeScript 2.3→5.4, webpack 2.5→5.91, ts-loader 2.0→9.5.
+- Removed deprecated uglifyjs-webpack-plugin (webpack 5 has built-in terser).
+- iPadOS Ctrl+C fix ported to `attachCustomKeyEventHandler` (xterm v5 public API).
+- UTF-8 decoding: pass `Uint8Array` directly to `term.write()` so xterm's stateful
+  parser handles multi-byte sequences split across WebSocket message boundaries
+  (fixes box-drawing character corruption with React Ink / pi agent).
+- `--debug` keyboard diagnostics preserved via `term.textarea` (public API in v5).
+- WebSocket text protocol, base64 encoding, `webtty` subprotocol, ping/reconnect
+  all unchanged.
+- CSS: xterm v5 `.xterm` class selectors (was `.terminal` in v2).
+
+Avoided:
+- Binary WebSocket migration.
+- WebGL renderer (not loaded).
+- Preact, zmodem/trzsz, image addon.
+- CLI abstraction / Preact rewrite.
 
 Do not import all ttyd frontend features at once. Features such as Preact, binary protocol, WebGL, zmodem/trzsz, image addon, and complex flow control should be evaluated separately.
 

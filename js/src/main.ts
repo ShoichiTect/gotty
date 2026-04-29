@@ -1,4 +1,3 @@
-import { Hterm } from "./hterm";
 import { Xterm } from "./xterm";
 import { Terminal, WebTTY, protocols } from "./webtty";
 import { ConnectionFactory } from "./websocket";
@@ -9,16 +8,11 @@ declare var gotty_term: string;
 declare var gotty_debug: boolean;
 declare var gotty_ping_interval: number;
 
-const elem = document.getElementById("terminal")
+const elem = document.getElementById("terminal");
 
 if (elem !== null) {
-    var term: Terminal;
-    if (gotty_term == "hterm") {
-        term = new Hterm(elem);
-    } else {
-        term = new Xterm(elem, gotty_debug);
-    }
-    const httpsEnabled = window.location.protocol == "https:";
+    const term: Terminal = new Xterm(elem, gotty_debug);
+    const httpsEnabled = window.location.protocol === "https:";
     const url = (httpsEnabled ? 'wss://' : 'ws://') + window.location.host + window.location.pathname + 'ws';
     const args = window.location.search;
     const factory = new ConnectionFactory(url, protocols);
@@ -29,4 +23,4 @@ if (elem !== null) {
         closer();
         term.close();
     });
-};
+}

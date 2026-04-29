@@ -1,12 +1,12 @@
-import * as bare from "xterm";
-import { lib } from "libapps";
+import { Terminal as XTermTerminal } from "@xterm/xterm";
+import { FitAddon } from "@xterm/addon-fit";
 export declare class Xterm {
     elem: HTMLElement;
-    term: bare;
+    term: XTermTerminal;
+    fitAddon: FitAddon;
     resizeListener: () => void;
     resizeDebounceTimer: number | null;
     debouncedResizeHandler: () => void;
-    decoder: lib.UTF8Decoder;
     message: HTMLElement;
     messageTimeout: number;
     messageTimer: number;
@@ -22,14 +22,14 @@ export declare class Xterm {
     showMessage(message: string, timeout: number): void;
     removeMessage(): void;
     setWindowTitle(title: string): void;
-    setPreferences(value: object): void;
+    setPreferences(_value: object): void;
     onInput(callback: (input: string) => void): void;
     onDebug(callback: (msg: string) => void): void;
     onResize(callback: (colmuns: number, rows: number) => void): void;
     deactivate(): void;
-    private setupIPadOSKeyboardFix();
-    private debugLog(tag, payload);
-    private attachKeyboardDebugListener();
+    private setupIPadOSKeyboardFix;
+    private debugLog;
+    private attachKeyboardDebugListener;
     reset(): void;
     close(): void;
 }

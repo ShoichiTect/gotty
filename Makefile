@@ -36,20 +36,16 @@ server/static/css/index.css: server/static/css resources/index.css
 server/static/css/xterm_customize.css: server/static/css resources/xterm_customize.css
 	cp resources/xterm_customize.css server/static/css/xterm_customize.css
 
-server/static/css/xterm.css: server/static/css js/node_modules/xterm/dist/xterm.css
-	cp js/node_modules/xterm/dist/xterm.css server/static/css/xterm.css
+server/static/css/xterm.css: server/static/css js/node_modules/@xterm/xterm/css/xterm.css
+	cp js/node_modules/@xterm/xterm/css/xterm.css server/static/css/xterm.css
 
-js/node_modules/xterm/dist/xterm.css:
+js/node_modules/@xterm/xterm/css/xterm.css:
 	cd js && \
 	npm install
 
-js/dist/gotty-bundle.js: js/src/* js/node_modules/webpack
+js/dist/gotty-bundle.js: js/src/*
 	cd js && \
-	`npm bin`/webpack
-
-js/node_modules/webpack:
-	cd js && \
-	npm install
+	npx webpack
 
 tools:
 	go install github.com/mitchellh/gox@latest

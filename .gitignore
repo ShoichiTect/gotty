@@ -4,3 +4,4 @@ server/static/
 builds
 js/node_modules/*
 .firecrawl/
+js/dist/gotty-bundle.js.map
