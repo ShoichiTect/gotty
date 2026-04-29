@@ -7,43 +7,37 @@ gotty: main.go server/*.go webtty/*.go backend/*.go Makefile
 	go build ${BUILD_OPTIONS}
 
 .PHONY: asset
-asset: bindata/static/js/gotty-bundle.js bindata/static/index.html bindata/static/favicon.png bindata/static/css/index.css bindata/static/css/xterm.css bindata/static/css/xterm_customize.css
-	go-bindata -prefix bindata -pkg server -ignore=\\.gitkeep -o server/asset.go bindata/...
-	gofmt -w server/asset.go
+asset: server/static/js/gotty-bundle.js server/static/index.html server/static/favicon.png server/static/css/index.css server/static/css/xterm.css server/static/css/xterm_customize.css
 
 .PHONY: all
 all: asset gotty
 
-bindata:
-	mkdir bindata
+server/static:
+	mkdir -p server/static
 
-bindata/static: bindata
-	mkdir bindata/static
+server/static/index.html: server/static resources/index.html
+	cp resources/index.html server/static/index.html
 
-bindata/static/index.html: bindata/static resources/index.html
-	cp resources/index.html bindata/static/index.html
+server/static/favicon.png: server/static resources/favicon.png
+	cp resources/favicon.png server/static/favicon.png
 
-bindata/static/favicon.png: bindata/static resources/favicon.png
-	cp resources/favicon.png bindata/static/favicon.png
+server/static/js: server/static
+	mkdir -p server/static/js
 
-bindata/static/js: bindata/static
-	mkdir -p bindata/static/js
+server/static/js/gotty-bundle.js: server/static/js js/dist/gotty-bundle.js
+	cp js/dist/gotty-bundle.js server/static/js/gotty-bundle.js
 
+server/static/css: server/static
+	mkdir -p server/static/css
 
-bindata/static/js/gotty-bundle.js: bindata/static/js js/dist/gotty-bundle.js
-	cp js/dist/gotty-bundle.js bindata/static/js/gotty-bundle.js
+server/static/css/index.css: server/static/css resources/index.css
+	cp resources/index.css server/static/css/index.css
 
-bindata/static/css: bindata/static
-	mkdir -p bindata/static/css
+server/static/css/xterm_customize.css: server/static/css resources/xterm_customize.css
+	cp resources/xterm_customize.css server/static/css/xterm_customize.css
 
-bindata/static/css/index.css: bindata/static/css resources/index.css
-	cp resources/index.css bindata/static/css/index.css
-
-bindata/static/css/xterm_customize.css: bindata/static/css resources/xterm_customize.css
-	cp resources/xterm_customize.css bindata/static/css/xterm_customize.css
-
-bindata/static/css/xterm.css: bindata/static/css js/node_modules/xterm/dist/xterm.css
-	cp js/node_modules/xterm/dist/xterm.css bindata/static/css/xterm.css
+server/static/css/xterm.css: server/static/css js/node_modules/xterm/dist/xterm.css
+	cp js/node_modules/xterm/dist/xterm.css server/static/css/xterm.css
 
 js/node_modules/xterm/dist/xterm.css:
 	cd js && \

@@ -133,7 +133,7 @@ Avoid in this phase:
 - WebGL default renderer.
 - Large frontend rewrite.
 
-### Phase 2.5: Go standard library cleanup
+### Phase 2.5: Go standard library cleanup — ✅ Done (XXXXXXX)
 
 Goal: mechanical, low-risk modernization that reduces diff noise for later phases.
 
@@ -145,7 +145,7 @@ Tasks:
 
 - Replace `ioutil.ReadFile` with `os.ReadFile`, drop `io/ioutil` import.
 - Replace `github.com/pkg/errors` with standard `errors` and `fmt.Errorf("%w")`.
-- Replace `go-bindata`/`go-bindata-assetfs` with Go `embed`.
+- Replace `go-bindata`/`go-bindata-assetfs` with Go `embed` (`server/embed.go` + `server/static/`).
 - Run `go mod tidy` after each step.
 
 Avoid: `urfave/cli` v2 migration, HCL config replacement (deferred to Phase 6).

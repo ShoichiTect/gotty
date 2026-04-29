@@ -26,7 +26,7 @@ docs/
 
 | File | Status | Description |
 |------|--------|-------------|
-| [maintenance-plan.md](plans/maintenance-plan.md) | **Ongoing** | Overall roadmap: Phase 0–6 with guiding principles |
+| [maintenance-plan.md](plans/maintenance-plan.md) | **Ongoing** | Overall roadmap: Phase 0–6 (Phase 0–2.5 ✅ done) |
 | [hcl-to-json-migration-plan.md](plans/hcl-to-json-migration-plan.md) | ✅ Done (2da9307) | Migration from HCL config to JSON |
 | [outdated-patterns.md](plans/outdated-patterns.md) | Backlog | Catalog of 17 legacy code patterns to modernize |
 

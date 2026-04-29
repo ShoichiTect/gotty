@@ -4,10 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
-
-	"github.com/pkg/errors"
 )
 
 // WebTTY bridges a PTY slave and its PTY master.
@@ -63,7 +62,7 @@ func New(masterConn Master, slave Slave, options ...Option) (*WebTTY, error) {
 func (wt *WebTTY) Run(ctx context.Context) error {
 	err := wt.sendInitializeMessage()
 	if err != nil {
-		return errors.Wrapf(err, "failed to send initializing message")
+		return fmt.Errorf("failed to send initializing message: %w", err)
 	}
 
 	errs := make(chan error, 2)
@@ -121,21 +120,21 @@ func (wt *WebTTY) sendInitializeMessage() error {
 
 	err := wt.masterWrite(append([]byte{SetWindowTitle}, wt.windowTitle...))
 	if err != nil {
-		return errors.Wrapf(err, "failed to send window title")
+		return fmt.Errorf("failed to send window title: %w", err)
 	}
 
 	if wt.reconnect > 0 {
 		reconnect, _ := json.Marshal(wt.reconnect)
 		err := wt.masterWrite(append([]byte{SetReconnect}, reconnect...))
 		if err != nil {
-			return errors.Wrapf(err, "failed to set reconnect")
+			return fmt.Errorf("failed to set reconnect: %w", err)
 		}
 	}
 
 	if wt.masterPrefs != nil {
 		err := wt.masterWrite(append([]byte{SetPreferences}, wt.masterPrefs...))
 		if err != nil {
-			return errors.Wrapf(err, "failed to set preferences")
+			return fmt.Errorf("failed to set preferences: %w", err)
 		}
 	}
 
@@ -146,7 +145,7 @@ func (wt *WebTTY) handleSlaveReadEvent(data []byte) error {
 	safeMessage := base64.StdEncoding.EncodeToString(data)
 	err := wt.masterWrite(append([]byte{Output}, []byte(safeMessage)...))
 	if err != nil {
-		return errors.Wrapf(err, "failed to send message to master")
+		return fmt.Errorf("failed to send message to master: %w", err)
 	}
 
 	return nil
@@ -158,7 +157,7 @@ func (wt *WebTTY) masterWrite(data []byte) error {
 
 	_, err := wt.masterConn.Write(data)
 	if err != nil {
-		return errors.Wrapf(err, "failed to write to master")
+		return fmt.Errorf("failed to write to master: %w", err)
 	}
 
 	return nil
@@ -186,14 +185,14 @@ func (wt *WebTTY) handleMasterReadEvent(data []byte) error {
 
 		_, err := wt.slave.Write(data[1:])
 		if err != nil {
-			return errors.Wrapf(err, "failed to write received data to slave")
+			return fmt.Errorf("failed to write received data to slave: %w", err)
 		}
 
 	case Ping:
 		wt.emitEvent("ping", nil)
 		err := wt.masterWrite([]byte{Pong})
 		if err != nil {
-			return errors.Wrapf(err, "failed to return Pong message to master")
+			return fmt.Errorf("failed to return Pong message to master: %w", err)
 		}
 
 	case InputDebug:
@@ -213,7 +212,7 @@ func (wt *WebTTY) handleMasterReadEvent(data []byte) error {
 		var args argResizeTerminal
 		err := json.Unmarshal(data[1:], &args)
 		if err != nil {
-			return errors.Wrapf(err, "received malformed data for terminal resize")
+			return fmt.Errorf("received malformed data for terminal resize: %w", err)
 		}
 		rows := wt.rows
 		if rows == 0 {
@@ -231,7 +230,7 @@ func (wt *WebTTY) handleMasterReadEvent(data []byte) error {
 		})
 		wt.slave.ResizeTerminal(columns, rows)
 	default:
-		return errors.Errorf("unknown message type `%c`", data[0])
+		return fmt.Errorf("unknown message type `%c`", data[0])
 	}
 
 	return nil
