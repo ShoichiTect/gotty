@@ -108,6 +108,12 @@ func (server *Server) Run(ctx context.Context, options ...RunOption) error {
 
 	if server.options.PermitWrite {
 		log.Printf("Permitting clients to write input to the PTY.")
+		if server.options.Address == "0.0.0.0" {
+			log.Printf("WARNING: --permit-write with bind address 0.0.0.0 exposes terminal input to the network.")
+		}
+		if !server.options.EnableTLS && !server.options.EnableBasicAuth && server.options.Credential == "" {
+			log.Printf("WARNING: --permit-write is enabled without TLS or authentication. Anyone who can reach this server can send input.")
+		}
 	}
 	if server.options.Once {
 		log.Printf("Once option is provided, accepting only one client")
@@ -215,13 +221,26 @@ func (server *Server) setupHandlers(ctx context.Context, cancel context.CancelFu
 
 func (server *Server) setupHTTPServer(handler http.Handler) (*http.Server, error) {
 	srv := &http.Server{
-		Handler: handler,
+		Handler:           handler,
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 
-	if server.options.EnableTLSClientAuth {
-		tlsConfig, err := server.tlsConfig()
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed to setup TLS configuration")
+	if server.options.EnableTLS {
+		tlsConfig := &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		}
+		if server.options.EnableTLSClientAuth {
+			caFile := homedir.Expand(server.options.TLSCACrtFile)
+			caCert, err := ioutil.ReadFile(caFile)
+			if err != nil {
+				return nil, errors.New("could not open CA crt file " + caFile)
+			}
+			caCertPool := x509.NewCertPool()
+			if !caCertPool.AppendCertsFromPEM(caCert) {
+				return nil, errors.New("could not parse CA crt file data in " + caFile)
+			}
+			tlsConfig.ClientCAs = caCertPool
+			tlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
 		}
 		srv.TLSConfig = tlsConfig
 	}
@@ -229,19 +248,4 @@ func (server *Server) setupHTTPServer(handler http.Handler) (*http.Server, error
 	return srv, nil
 }
 
-func (server *Server) tlsConfig() (*tls.Config, error) {
-	caFile := homedir.Expand(server.options.TLSCACrtFile)
-	caCert, err := ioutil.ReadFile(caFile)
-	if err != nil {
-		return nil, errors.New("could not open CA crt file " + caFile)
-	}
-	caCertPool := x509.NewCertPool()
-	if !caCertPool.AppendCertsFromPEM(caCert) {
-		return nil, errors.New("could not parse CA crt file data in " + caFile)
-	}
-	tlsConfig := &tls.Config{
-		ClientCAs:  caCertPool,
-		ClientAuth: tls.RequireAndVerifyClientCert,
-	}
-	return tlsConfig, nil
-}
+
