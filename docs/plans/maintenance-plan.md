@@ -195,7 +195,7 @@ Tasks:
 8. Test on iPad Safari/Chrome after each step.
 
 Done:
-- ac7be45 — replaced xterm v2 with `@xterm/xterm` v5.5.0, added fit and web-links addons.
+- 710766d — replaced xterm v2 with `@xterm/xterm` v5.5.0, added fit and web-links addons.
 - Removed hterm/libapps entirely. hterm.ts, typings/libapps, and `--term hterm` path deleted.
 - Upgraded TypeScript 2.3→5.4, webpack 2.5→5.91, ts-loader 2.0→9.5.
 - Removed deprecated uglifyjs-webpack-plugin (webpack 5 has built-in terser).
