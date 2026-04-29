@@ -7,6 +7,7 @@ import { ConnectionFactory } from "./websocket";
 declare var gotty_auth_token: string;
 declare var gotty_term: string;
 declare var gotty_debug: boolean;
+declare var gotty_ping_interval: number;
 
 const elem = document.getElementById("terminal")
 
@@ -21,7 +22,7 @@ if (elem !== null) {
     const url = (httpsEnabled ? 'wss://' : 'ws://') + window.location.host + window.location.pathname + 'ws';
     const args = window.location.search;
     const factory = new ConnectionFactory(url, protocols);
-    const wt = new WebTTY(term, factory, args, gotty_auth_token);
+    const wt = new WebTTY(term, factory, args, gotty_auth_token, gotty_ping_interval);
     const closer = wt.open();
 
     window.addEventListener("unload", () => {

@@ -30,6 +30,7 @@ type Options struct {
 	Height              int              `json:"height" flagName:"height" flagDescribe:"Static height of the screen, 0(default) means dynamically resize" default:"0"`
 	WSOrigin            string           `json:"ws_origin" flagName:"ws-origin" flagDescribe:"A regular expression that matches origin URLs to be accepted by WebSocket. No cross origin requests are acceptable by default" default:""`
 	Term                string           `json:"term" flagName:"term" flagDescribe:"Terminal name to use on the browser, one of xterm or hterm." default:"xterm"`
+	PingInterval        int              `json:"ping_interval" flagName:"ping-interval" flagDescribe:"WebSocket ping interval in seconds (default 30)" default:"30"`
 	Debug               bool             `json:"debug" flagName:"debug" flagSName:"d" flagDescribe:"Enable debug logging for iPad/proxy/WebSocket diagnostics" default:"false"`
 
 	TitleVariables map[string]interface{}
@@ -38,6 +39,9 @@ type Options struct {
 func (options *Options) Validate() error {
 	if options.EnableTLSClientAuth && !options.EnableTLS {
 		return errors.New("TLS client authentication is enabled, but TLS is not enabled")
+	}
+	if options.PingInterval < 0 {
+		return errors.New("ping-interval must be >= 0 (0 to disable)")
 	}
 	return nil
 }

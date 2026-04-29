@@ -50,13 +50,15 @@ export class WebTTY {
     args: string;
     authToken: string;
     reconnect: number;
+    pingInterval: number;
 
-    constructor(term: Terminal, connectionFactory: ConnectionFactory, args: string, authToken: string) {
+    constructor(term: Terminal, connectionFactory: ConnectionFactory, args: string, authToken: string, pingInterval: number) {
         this.term = term;
         this.connectionFactory = connectionFactory;
         this.args = args;
         this.authToken = authToken;
         this.reconnect = -1;
+        this.pingInterval = (pingInterval > 0) ? pingInterval : 30;
     };
 
     open() {
@@ -104,7 +106,7 @@ export class WebTTY {
 
                 pingTimer = setInterval(() => {
                     connection.send(msgPing)
-                }, 30 * 1000);
+                }, this.pingInterval * 1000);
 
             });
 

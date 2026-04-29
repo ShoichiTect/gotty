@@ -227,7 +227,8 @@ func (server *Server) handleAuthToken(w http.ResponseWriter, r *http.Request) {
 
 func (server *Server) handleConfig(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/javascript")
-	w.Write([]byte("var gotty_term = '" + server.options.Term + "';"))
+	w.Write([]byte("var gotty_term = '" + server.options.Term + "';\n" +
+		"var gotty_ping_interval = " + fmt.Sprint(server.options.PingInterval) + ";"))
 }
 
 func (server *Server) handleDebugFlag(w http.ResponseWriter, r *http.Request) {

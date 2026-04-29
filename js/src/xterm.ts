@@ -8,6 +8,8 @@ export class Xterm {
     elem: HTMLElement;
     term: bare;
     resizeListener: () => void;
+    resizeDebounceTimer: number | null;
+    debouncedResizeHandler: () => void;
     decoder: lib.UTF8Decoder;
 
     message: HTMLElement;
@@ -33,9 +35,20 @@ export class Xterm {
             this.showMessage(String(this.term.cols) + "x" + String(this.term.rows), this.messageTimeout);
         };
 
+        this.resizeDebounceTimer = null;
+        this.debouncedResizeHandler = () => {
+            if (this.resizeDebounceTimer !== null) {
+                clearTimeout(this.resizeDebounceTimer);
+            }
+            this.resizeDebounceTimer = window.setTimeout(() => {
+                this.resizeDebounceTimer = null;
+                this.resizeListener();
+            }, 150);
+        };
+
         this.term.on("open", () => {
             this.resizeListener();
-            window.addEventListener("resize", () => { this.resizeListener(); });
+            window.addEventListener("resize", this.debouncedResizeHandler);
 
             // iPadOS Safari keyboard fix:
             // On iPadOS with a hardware keyboard, pressing Ctrl+C produces a
@@ -261,7 +274,11 @@ export class Xterm {
     }
 
     close(): void {
-        window.removeEventListener("resize", this.resizeListener);
+        if (this.resizeDebounceTimer !== null) {
+            clearTimeout(this.resizeDebounceTimer);
+            this.resizeDebounceTimer = null;
+        }
+        window.removeEventListener("resize", this.debouncedResizeHandler);
         this.term.destroy();
     }
 }

@@ -45,6 +45,7 @@ export declare class WebTTY {
     args: string;
     authToken: string;
     reconnect: number;
-    constructor(term: Terminal, connectionFactory: ConnectionFactory, args: string, authToken: string);
+    pingInterval: number;
+    constructor(term: Terminal, connectionFactory: ConnectionFactory, args: string, authToken: string, pingInterval: number);
     open(): () => void;
 }

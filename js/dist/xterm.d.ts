@@ -4,6 +4,8 @@ export declare class Xterm {
     elem: HTMLElement;
     term: bare;
     resizeListener: () => void;
+    resizeDebounceTimer: number | null;
+    debouncedResizeHandler: () => void;
     decoder: lib.UTF8Decoder;
     message: HTMLElement;
     messageTimeout: number;
