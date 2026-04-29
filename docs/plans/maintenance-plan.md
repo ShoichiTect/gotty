@@ -133,33 +133,45 @@ Avoid in this phase:
 - WebGL default renderer.
 - Large frontend rewrite.
 
-### Phase 3: define an iPad compatibility profile
+### Phase 2.5: Go standard library cleanup
 
-Goal: make the target use case explicit and configurable.
+Goal: mechanical, low-risk modernization that reduces diff noise for later phases.
 
-Possible option names:
+Why now: `ioutil` is deprecated since Go 1.16, `pkg/errors` is superseded by
+stdlib `errors` (Go 1.13), and `go-bindata` is superseded by `embed` (Go 1.16).
+These are the smallest possible changes — no behavioral impact, no protocol risk.
 
-```bash
-gotty --client-profile ipad -w -p 9090 bash
-```
+Tasks:
 
-or:
+- Replace `ioutil.ReadFile` with `os.ReadFile`, drop `io/ioutil` import.
+- Replace `github.com/pkg/errors` with standard `errors` and `fmt.Errorf("%w")`.
+- Replace `go-bindata`/`go-bindata-assetfs` with Go `embed`.
+- Run `go mod tidy` after each step.
 
-```bash
-gotty --profile ipad -w -p 9090 bash
-```
+Avoid: `urfave/cli` v2 migration, HCL config replacement (deferred to Phase 6).
 
-Desired behavior for the iPad profile:
+### Phase 3: iPad frontend fixes
 
-- No WebGL by default.
-- Prefer DOM or canvas renderer.
-- Keep text WebSocket protocol by default.
-- Mobile viewport handling.
-- Resize debounce.
-- iPadOS Safari focus/keyboard workarounds.
-- Configurable ping interval.
-- Reconnect enabled or easy to enable.
-- Stable behavior when the software keyboard changes viewport height.
+Goal: address real observed issues without introducing a CLI abstraction.
+
+Renamed from the original "iPad compatibility profile" plan. A `--profile ipad`
+flag would be over-engineering at this stage — the flags already exist
+(`--reconnect`, `--debug`). Instead, fix the actual browser-side problems:
+
+1. **Viewport meta tag** — add `<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">`
+   to `resources/index.html`. Zero risk, one line.
+
+2. **Resize debounce** — add 150ms debounce in the frontend resize handler.
+   Prevents flicker when the iPad software keyboard changes viewport height.
+   Small JS change, no protocol impact.
+
+3. **Configurable ping interval** — expose the hardcoded 30-second ping as a
+   `--ping-interval` CLI flag (Go side) and `gotty_ping_interval` JS variable
+   (via `config.js` endpoint). Improves reconnection reliability after
+   iPad sleep/background.
+
+Each task is independent, testable on iPad immediately, and touches only one
+layer (HTML, JS, or Go config — never all three at once).
 
 ### Phase 4: modernize frontend carefully
 
@@ -190,17 +202,21 @@ Features to consider importing or adapting from ttyd:
 - Configurable WebSocket ping interval and timeout.
 - Clear origin-check behavior.
 
-### Phase 6: asset and Go cleanup
+### Phase 6: remaining Go modernization
 
-Goal: reduce old Go-era maintenance burden.
+Goal: final cleanup of pre-module-Go patterns deferred until the core is stable.
 
-Tasks:
+Tasks already moved to Phase 2.5:
+- `ioutil` → `os`/`io`.
+- `pkg/errors` → stdlib `errors`.
+- `go-bindata` → `embed`.
 
-- Replace go-bindata/go-bindata-assetfs with Go `embed`.
-- Replace `github.com/pkg/errors` with standard `errors` and `fmt.Errorf("%w")`.
-- Replace deprecated `ioutil` usage.
-- Consider `urfave/cli` v2 migration only after the baseline is stable.
-- Revisit the old HCL config dependency.
+Remaining tasks for this phase:
+
+- Consider `urfave/cli` v2 migration only after frontend modernization (Phase 4)
+  is validated on iPad.
+- Revisit the old HCL config dependency (currently unused after the JSON
+  migration; may be removable).
 
 ## ttyd features to adopt selectively
 
