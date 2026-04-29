@@ -77,20 +77,16 @@ By default, GoTTY starts a web server at port 8080. Open the URL on your web bro
 
 ### Config File
 
-You can customize default options and your terminal (hterm) by providing a config file to the `gotty` command. GoTTY loads a profile file at `~/.gotty` by default when it exists.
+You can customize default options and your terminal (hterm) by providing a JSON config file to the `gotty` command. GoTTY loads a profile file at `~/.gotty` by default when it exists.
 
-```
-// Listen at port 9000 by default
-port = "9000"
-
-// Enable TSL/SSL by default
-enable_tls = true
-
-// hterm preferences
-// Smaller font and a little bit bluer background color
-preferences {
-    font_size = 5
-    background_color = "rgb(16, 16, 32)"
+```json
+{
+    "port": "9000",
+    "enable_tls": true,
+    "preferences": {
+        "font_size": 5,
+        "background_color": "rgb(16, 16, 32)"
+    }
 }
 ```
 

@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"io/ioutil"
+	"encoding/json"
 	"log"
 	"os"
 	"reflect"
@@ -9,7 +9,6 @@ import (
 
 	"github.com/fatih/structs"
 	"github.com/urfave/cli"
-	"github.com/yudai/hcl"
 
 	"github.com/yudai/gotty/pkg/homedir"
 )
@@ -107,15 +106,14 @@ func ApplyConfigFile(filePath string, options ...interface{}) error {
 		return err
 	}
 
-	fileString := []byte{}
 	log.Printf("Loading config file at: %s", filePath)
-	fileString, err := ioutil.ReadFile(filePath)
+	fileBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		return err
 	}
 
 	for _, object := range options {
-		if err := hcl.Decode(object, string(fileString)); err != nil {
+		if err := json.Unmarshal(fileBytes, object); err != nil {
 			return err
 		}
 	}
