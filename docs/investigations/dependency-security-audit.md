@@ -59,17 +59,29 @@ They should be removed when the Go baseline is ported and `go mod tidy` is run.
 
 ## Go vulnerability checks
 
-`govulncheck` was not installed in the local environment during the first audit.
-
-Recommended local setup:
+### Phase 2 govulncheck results (2026-04-29)
 
 ```bash
 go install golang.org/x/vuln/cmd/govulncheck@latest
-cd gotty-fork
-govulncheck ./...
+make vulncheck
 ```
 
-Eventually add this to CI.
+5 standard library vulnerabilities found (all fixed in go1.26.2):
+
+| Vuln ID | Package | Severity | Summary |
+|---------|---------|----------|---------|
+| GO-2026-4865 | `html/template` | — | JsBraceDepth context tracking bugs (XSS) |
+| GO-2026-4866 | `crypto/x509` | — | Case-sensitive excludedSubtrees name constraints → auth bypass |
+| GO-2026-4870 | `crypto/tls` | — | Unauthenticated TLS 1.3 KeyUpdate record → DoS |
+| GO-2026-4946 | `crypto/x509` | — | Inefficient policy validation |
+| GO-2026-4947 | `crypto/x509` | — | Unexpected work during chain building |
+
+All five are in the Go stdlib, not in third-party dependencies. No third-party
+vulnerabilities are called by this codebase.
+
+Action: upgrade to go1.26.2+ when available.
+
+`make vulncheck` added.
 
 ## Frontend dependency findings
 

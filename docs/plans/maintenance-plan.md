@@ -108,7 +108,7 @@ Add debug logging for:
 
 This phase should include comparison notes against ttyd on the same iPad/Tailscale/Cloudflare paths.
 
-### Phase 2: security baseline without protocol churn
+### Phase 2: security baseline without protocol churn — ✅ Done (d2608e9)
 
 Goal: remove obvious risk while keeping the working iPad behavior.
 
@@ -120,7 +120,12 @@ Tasks:
 - Add basic response headers such as `X-Content-Type-Options: nosniff` and `Referrer-Policy`.
 - Strengthen warnings for `--permit-write`, especially with public bind and no authentication.
 - Add `govulncheck ./...` to local checks and eventually CI.
-- Document npm audit findings for the old frontend.
+- Document npm audit findings for the old frontend. → See `docs/investigations/dependency-security-audit.md`.
+
+Done:
+- d2608e9 — all 7 tasks completed, `go build ./...` and `go vet ./...` pass.
+- `govulncheck ./...` found 5 stdlib vulnerabilities (GO-2026-4865/4866/4870/4946/4947), all fixed in go1.26.2.
+- `make vulncheck` target added.
 
 Avoid in this phase:
 
