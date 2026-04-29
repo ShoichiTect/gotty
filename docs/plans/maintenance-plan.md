@@ -150,7 +150,7 @@ Tasks:
 
 Avoid: `urfave/cli` v2 migration, HCL config replacement (deferred to Phase 6).
 
-### Phase 3: iPad frontend fixes — ✅ Done (TBD)
+### Phase 3: iPad frontend fixes — ✅ Done (19e426f)
 
 Goal: address real observed issues without introducing a CLI abstraction.
 
@@ -174,7 +174,7 @@ Each task is independent, testable on iPad immediately, and touches only one
 layer (HTML, JS, or Go config — never all three at once).
 
 Done:
-- TBD commit — viewport meta tag, 150ms resize debounce, `--ping-interval` flag with `gotty_ping_interval` JS variable.
+- 19e426f — viewport meta tag, 150ms resize debounce, `--ping-interval` flag with `gotty_ping_interval` JS variable.
 
 ### Phase 4: modernize frontend carefully
 
