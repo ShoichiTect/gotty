@@ -179,7 +179,7 @@ layer (HTML, JS, or Go config — never all three at once).
 Done:
 - 19e426f — viewport meta tag, 150ms resize debounce, `--ping-interval` flag with `gotty_ping_interval` JS variable.
 
-### Phase 4: modernize frontend carefully — ✅ Done (ac7be45)
+### Phase 4: modernize frontend carefully — ✅ Done (710766d)
 
 Goal: remove known frontend vulnerabilities while preserving the working protocol.
 
