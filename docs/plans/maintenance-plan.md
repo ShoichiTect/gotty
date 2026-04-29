@@ -133,7 +133,7 @@ Avoid in this phase:
 - WebGL default renderer.
 - Large frontend rewrite.
 
-### Phase 2.5: Go standard library cleanup — ✅ Done (XXXXXXX)
+### Phase 2.5: Go standard library cleanup — ✅ Done (f6bc85a)
 
 Goal: mechanical, low-risk modernization that reduces diff noise for later phases.
 
