@@ -1,6 +1,7 @@
 import { Terminal as XTermTerminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
+import { Unicode11Addon } from "@xterm/addon-unicode11";
 
 export class Xterm {
     elem: HTMLElement;
@@ -28,7 +29,16 @@ export class Xterm {
 
         this.term = new XTermTerminal({
             cursorBlink: true,
+            allowProposedApi: true,
+            fontFamily: '"DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols", "Symbols Nerd Font"',
         });
+
+        // Activate the Unicode 11 character width addon so that emoji
+        // and other fullwidth characters get correct 2-cell treatment
+        // without affecting narrow symbols (e.g. ✗ U+2717 stays width 1).
+        const unicode11Addon = new Unicode11Addon();
+        this.term.loadAddon(unicode11Addon);
+        this.term.unicode.activeVersion = '11';
 
         this.term.loadAddon(this.fitAddon);
         this.term.loadAddon(webLinksAddon);

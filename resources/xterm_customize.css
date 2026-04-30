@@ -1,9 +1,17 @@
+@font-face {
+    font-family: "Symbols Nerd Font";
+    src: url("../fonts/SymbolsNerdFont-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    unicode-range: U+E000-U+F8FF, U+F0000-U+FFFFD, U+100000-U+10FFFD;
+}
+
 .xterm {
-    font-family: "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols";
+    font-family: "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols", "Symbols Nerd Font";
 }
 
 .xterm-overlay {
-    font-family: "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols";
+    font-family: "DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols", "Symbols Nerd Font";
     border-radius: 15px;
     font-size: xx-large;
     color: black;

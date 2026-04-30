@@ -7,7 +7,7 @@ gotty: main.go server/*.go webtty/*.go backend/*.go Makefile
 	go build ${BUILD_OPTIONS}
 
 .PHONY: asset
-asset: server/static/js/gotty-bundle.js server/static/index.html server/static/favicon.png server/static/css/index.css server/static/css/xterm.css server/static/css/xterm_customize.css
+asset: server/static/js/gotty-bundle.js server/static/index.html server/static/favicon.png server/static/css/index.css server/static/css/xterm.css server/static/css/xterm_customize.css server/static/fonts/SymbolsNerdFont-Regular.ttf
 
 .PHONY: all
 all: asset gotty
@@ -35,6 +35,12 @@ server/static/css/index.css: server/static/css resources/index.css
 
 server/static/css/xterm_customize.css: server/static/css resources/xterm_customize.css
 	cp resources/xterm_customize.css server/static/css/xterm_customize.css
+
+server/static/fonts: server/static
+	mkdir -p server/static/fonts
+
+server/static/fonts/SymbolsNerdFont-Regular.ttf: server/static/fonts resources/fonts/SymbolsNerdFont-Regular.ttf
+	cp resources/fonts/SymbolsNerdFont-Regular.ttf server/static/fonts/SymbolsNerdFont-Regular.ttf
 
 server/static/css/xterm.css: server/static/css js/node_modules/@xterm/xterm/css/xterm.css
 	cp js/node_modules/@xterm/xterm/css/xterm.css server/static/css/xterm.css
