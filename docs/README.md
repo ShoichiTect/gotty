@@ -39,6 +39,7 @@ docs/
 | [dependency-security-audit.md](investigations/dependency-security-audit.md) | Dependency audit, npm/Go vulnerability scan results, security design findings |
 | [ipad-ttyd-investigation.md](investigations/ipad-ttyd-investigation.md) | Root-cause analysis: why ttyd fails on iPad while GoTTY works |
 | [font-size-investigation.md](investigations/font-size-investigation.md) | Can font size be changed via CLI? Options and code patches |
+| [ipad-paste-issue.md](investigations/ipad-paste-issue.md) | iPad Safari paste issue: clipboard content not pasted into terminal |
 
 ---
 
