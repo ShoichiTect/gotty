@@ -1,21 +1,20 @@
 export const protocols = ["webtty"];
 
-export const msgInputUnknown = '0';
-export const msgInput = '1';
-export const msgPing = '2';
-export const msgResizeTerminal = '3';
-export const msgDebug = '4';
+export const msgInputUnknown = "0";
+export const msgInput = "1";
+export const msgPing = "2";
+export const msgResizeTerminal = "3";
+export const msgDebug = "4";
 
-export const msgUnknownOutput = '0';
-export const msgOutput = '1';
-export const msgPong = '2';
-export const msgSetWindowTitle = '3';
-export const msgSetPreferences = '4';
-export const msgSetReconnect = '5';
-
+export const msgUnknownOutput = "0";
+export const msgOutput = "1";
+export const msgPong = "2";
+export const msgSetWindowTitle = "3";
+export const msgSetPreferences = "4";
+export const msgSetReconnect = "5";
 
 export interface Terminal {
-    info(): { columns: number, rows: number };
+    info(): { columns: number; rows: number };
     output(data: string): void;
     showMessage(message: string, timeout: number): void;
     removeMessage(): void;
@@ -23,7 +22,7 @@ export interface Terminal {
     setPreferences(value: object): void;
     onInput(callback: (input: string) => void): void;
     onDebug(callback: (msg: string) => void): void;
-    onResize(callback: (colmuns: number, rows: number) => void): void;
+    onResize(callback: (columns: number, rows: number) => void): void;
     reset(): void;
     deactivate(): void;
     close(): void;
@@ -43,7 +42,6 @@ export interface ConnectionFactory {
     create(): Connection;
 }
 
-
 export class WebTTY {
     term: Terminal;
     connectionFactory: ConnectionFactory;
@@ -52,14 +50,20 @@ export class WebTTY {
     reconnect: number;
     pingInterval: number;
 
-    constructor(term: Terminal, connectionFactory: ConnectionFactory, args: string, authToken: string, pingInterval: number) {
+    constructor(
+        term: Terminal,
+        connectionFactory: ConnectionFactory,
+        args: string,
+        authToken: string,
+        pingInterval: number,
+    ) {
         this.term = term;
         this.connectionFactory = connectionFactory;
         this.args = args;
         this.authToken = authToken;
         this.reconnect = -1;
-        this.pingInterval = (pingInterval > 0) ? pingInterval : 30;
-    };
+        this.pingInterval = pingInterval > 0 ? pingInterval : 30;
+    }
 
     open() {
         let connection = this.connectionFactory.create();
@@ -70,44 +74,37 @@ export class WebTTY {
             connection.onOpen(() => {
                 const termInfo = this.term.info();
 
-                connection.send(JSON.stringify(
-                    {
+                connection.send(
+                    JSON.stringify({
                         Arguments: this.args,
                         AuthToken: this.authToken,
-                    }
-                ));
+                    }),
+                );
 
-
-                const resizeHandler = (colmuns: number, rows: number) => {
+                const resizeHandler = (columns: number, rows: number) => {
                     connection.send(
-                        msgResizeTerminal + JSON.stringify(
-                            {
-                                columns: colmuns,
-                                rows: rows
-                            }
-                        )
+                        msgResizeTerminal +
+                            JSON.stringify({
+                                columns,
+                                rows,
+                            }),
                     );
                 };
 
                 this.term.onResize(resizeHandler);
                 resizeHandler(termInfo.columns, termInfo.rows);
 
-                this.term.onInput(
-                    (input: string) => {
-                        connection.send(msgInput + input);
-                    }
-                );
+                this.term.onInput((input: string) => {
+                    connection.send(msgInput + input);
+                });
 
-                this.term.onDebug(
-                    (msg: string) => {
-                        connection.send(msgDebug + msg);
-                    }
-                );
+                this.term.onDebug((msg: string) => {
+                    connection.send(msgDebug + msg);
+                });
 
                 pingTimer = setInterval(() => {
-                    connection.send(msgPing)
+                    connection.send(msgPing);
                 }, this.pingInterval * 1000);
-
             });
 
             connection.onReceive((data) => {
@@ -121,15 +118,17 @@ export class WebTTY {
                     case msgSetWindowTitle:
                         this.term.setWindowTitle(payload);
                         break;
-                    case msgSetPreferences:
+                    case msgSetPreferences: {
                         const preferences = JSON.parse(payload);
                         this.term.setPreferences(preferences);
                         break;
-                    case msgSetReconnect:
+                    }
+                    case msgSetReconnect: {
                         const autoReconnect = JSON.parse(payload);
-                        console.log("Enabling reconnect: " + autoReconnect + " seconds")
+                        console.log(`Enabling reconnect: ${autoReconnect} seconds`);
                         this.reconnect = autoReconnect;
                         break;
+                    }
                 }
             });
 
@@ -147,12 +146,12 @@ export class WebTTY {
             });
 
             connection.open();
-        }
+        };
 
         setup();
         return () => {
             clearTimeout(reconnectTimeout);
             connection.close();
-        }
-    };
-};
+        };
+    }
+}

@@ -30,7 +30,8 @@ export class Xterm {
         this.term = new XTermTerminal({
             cursorBlink: true,
             allowProposedApi: true,
-            fontFamily: '"DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols", "Symbols Nerd Font"',
+            fontFamily:
+                '"DejaVu Sans Mono", "Everson Mono", FreeMono, Menlo, Terminal, monospace, "Apple Symbols", "Symbols Nerd Font"',
         });
 
         // Activate the Unicode 11 character width addon so that emoji
@@ -38,7 +39,7 @@ export class Xterm {
         // without affecting narrow symbols (e.g. ✗ U+2717 stays width 1).
         const unicode11Addon = new Unicode11Addon();
         this.term.loadAddon(unicode11Addon);
-        this.term.unicode.activeVersion = '11';
+        this.term.unicode.activeVersion = "11";
 
         this.term.loadAddon(this.fitAddon);
         this.term.loadAddon(webLinksAddon);
@@ -51,11 +52,14 @@ export class Xterm {
         this.resizeListener = () => {
             try {
                 this.fitAddon.fit();
-            } catch (_e) {
+            } catch {
                 // fit() may fail if the terminal element has zero dimensions
             }
             this.term.scrollToBottom();
-            this.showMessage(String(this.term.cols) + "x" + String(this.term.rows), this.messageTimeout);
+            this.showMessage(
+                `${this.term.cols}x${this.term.rows}`,
+                this.messageTimeout,
+            );
         };
 
         this.resizeDebounceTimer = null;
@@ -145,7 +149,7 @@ export class Xterm {
         this.debugCallback = callback;
     }
 
-    onResize(callback: (colmuns: number, rows: number) => void): void {
+    onResize(callback: (columns: number, rows: number) => void): void {
         this.term.onResize(({ cols, rows }) => {
             callback(cols, rows);
         });
@@ -217,7 +221,7 @@ export class Xterm {
                 };
                 this.debugLog("keydown", info);
             },
-            true // capture phase
+            true, // capture phase
         );
 
         textarea.addEventListener(
@@ -237,7 +241,7 @@ export class Xterm {
                 };
                 this.debugLog("keypress", info);
             },
-            true
+            true,
         );
 
         // Also capture beforeinput (modern input event used on iOS)
@@ -253,7 +257,7 @@ export class Xterm {
                 };
                 this.debugLog("beforeinput", info);
             },
-            true
+            true,
         );
 
         // Also catch copy events (iOS fires this for Ctrl+C)
@@ -268,7 +272,7 @@ export class Xterm {
                 };
                 this.debugLog("copy", info);
             },
-            true
+            true,
         );
     }
 

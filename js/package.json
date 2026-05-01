@@ -1,14 +1,37 @@
 {
-    "devDependencies": {
-        "ts-loader": "^9.5.1",
-        "typescript": "^5.4.5",
-        "webpack": "^5.91.0",
-        "webpack-cli": "^5.1.4"
-    },
-    "dependencies": {
-        "@xterm/addon-fit": "^0.10.0",
-        "@xterm/addon-unicode11": "^0.9.0",
-        "@xterm/addon-web-links": "^0.11.0",
-        "@xterm/xterm": "^5.5.0"
-    }
+  "name": "gotty-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "webpack",
+    "lint": "eslint src/",
+    "lint:fix": "eslint --fix src/",
+    "format": "prettier --write 'src/**/*.ts'",
+    "format:check": "prettier --check 'src/**/*.ts'",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.59.1",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-unicode11": "^0.9.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "@xterm/xterm": "^5.5.0"
+  }
 }

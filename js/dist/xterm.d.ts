@@ -25,7 +25,7 @@ export declare class Xterm {
     setPreferences(_value: object): void;
     onInput(callback: (input: string) => void): void;
     onDebug(callback: (msg: string) => void): void;
-    onResize(callback: (colmuns: number, rows: number) => void): void;
+    onResize(callback: (columns: number, rows: number) => void): void;
     deactivate(): void;
     private setupIPadOSKeyboardFix;
     private debugLog;

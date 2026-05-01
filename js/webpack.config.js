@@ -1,13 +1,16 @@
-const path = require('path');
+import path from "node:path";
 
-module.exports = {
-    mode: 'production',
+export default {
+    mode: "production",
     entry: "./src/main.ts",
     output: {
         filename: "gotty-bundle.js",
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(import.meta.dirname, "dist"),
     },
     devtool: "source-map",
+    performance: {
+        hints: false,
+    },
     resolve: {
         extensions: [".ts", ".tsx", ".js"],
     },
@@ -16,8 +19,8 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 loader: "ts-loader",
-                exclude: /node_modules/
-            }
-        ]
+                exclude: /node_modules/,
+            },
+        ],
     },
 };

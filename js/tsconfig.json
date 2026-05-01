@@ -6,11 +6,12 @@
     "outDir": "./dist/",
     "declaration": true,
     "sourceMap": true,
-    "target": "es2018",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "baseUrl": ".",
+    "lib": ["es2024", "dom", "dom.iterable"],
     "skipLibCheck": true
   },
   "exclude": [
